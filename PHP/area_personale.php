@@ -1,7 +1,8 @@
 <?php
     session_start();
     require_once("buildpage.php");
-    $header = file_get_contents("..\Views\Headers\area_personale.html");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    $header = file_get_contents($root."\Views\Headers\area_personale.html");
 
 
     $crumbs = '

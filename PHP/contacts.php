@@ -1,6 +1,7 @@
 <?php 
     require_once("buildpage.php");
-    $header = file_get_contents("..\Views\Headers\contacts.html");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    $header = file_get_contents($root."\Views\Headers\contacts.html");
      
     $crumbs = '
         <span>Contattaci</span>

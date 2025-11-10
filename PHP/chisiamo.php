@@ -1,7 +1,7 @@
 <?php
     require_once("buildpage.php");
-
-    $header = file_get_contents("..\Views\Headers\chisiamo.html");
+    $root = $_SERVER["DOCUMENT_ROOT"];
+    $header = file_get_contents($root."\Views\Headers\chisiamo.html");
 
     $crumbs = '
         Chi siamo
