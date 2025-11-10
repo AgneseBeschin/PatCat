@@ -27,6 +27,6 @@ CREATE TABLE UAdmin
 	constraint PassA CHECK(LENGTH(PassA) = 64)
 );
 
-/*dati provvisori provvisoria, non rispetta i controlli (che sono ancora da fare lato JS e PHP) : test123*/
+/*dati provvisori, non rispettano i controlli (che sono ancora da fare lato JS e PHP) : test123*/
 INSERT INTO Utente(Email,Username,Pass,Stato,Livello,Punti) VALUES ("asd@gmail.com","tester","ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae","Non Blocked","Cat Apprentice",199);
 
