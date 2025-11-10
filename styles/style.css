@@ -1,0 +1,155 @@
+* {
+    padding: 0;
+    margin: 0
+}
+
+html{
+    scroll-behavior: smooth;
+    height: 100%
+}
+
+html body
+{
+    font-family: 'Arial',sans-serif;
+    margin: auto;
+    max-width: 1024px;
+    display: flex;
+    flex-direction: column;
+    height: 100%
+}
+
+p{
+    line-height: 1.5
+}
+
+.contents
+{
+    display: grid;
+    width: 100%;    
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    justify-items: center;
+}
+
+.contents > div 
+{
+    grid-column-start: 2;
+    grid-column-end: 4;
+    /*width: 80%;*/
+    border-radius: 10px;
+    padding: 2em 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    box-shadow: rgb(0 0 0 / 15%) 0 2px 8px
+}
+
+div[id="contact_dform"] > form
+{
+    display: block;
+    margin: auto;
+    width: 29em;
+    text-align: left;
+}
+
+form > input:not([onclick])
+{
+    display: block;
+    width: 90%;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    padding-left: .5em;
+    margin-top: .2em;
+    margin-bottom: .8em;
+}
+
+#menu
+{
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
+}
+
+.navigazione
+{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+.area_personale
+{
+    grid-column-start: 3;
+    grid-column-end: 4;
+}
+
+ul
+{
+    background-color: yellow;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+ul li
+{
+    display: inline;
+}
+
+#breadcrumbs
+{
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 1fr;
+}
+
+#breadcrumbs > p
+{
+    grid-column-start: 2;
+    grid-column-end: 4;
+}
+
+.footer_content
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+}
+
+.footer_text
+{
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.footer_area
+{
+    grid-column-start: 2;
+    grid-column-end: 3;
+}
+
+label,select
+{
+    display: block;
+    margin-bottom: 2em;
+    padding: .2em;
+}
+
+label
+{
+    color: brown;
+    margin-bottom: .2em;
+    background-color: #fff;
+}
+
+textarea
+{
+    resize: vertical;
+    margin-bottom: .2em;
+    min-height: 10em;
+    max-height: 30em;
+    width: 90%;
+}
+
+.panel_content
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+/* RULES FOR MOBILE VERSION */
