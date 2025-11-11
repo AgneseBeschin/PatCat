@@ -22,11 +22,8 @@ CREATE TABLE Utente (
 
 CREATE TABLE UAdmin (
     Email VARCHAR(100) PRIMARY KEY,
-    Username VARCHAR(20) UNIQUE NOT NULL,
-    Pass CHAR(64) NOT NULL,
-    CONSTRAINT ck_admin_email CHECK (LENGTH(Email) > 7 AND LENGTH(Email) <= 100),
-    CONSTRAINT ck_admin_username CHECK (LENGTH(Username) > 0 AND LENGTH(Username) <= 20),
-    CONSTRAINT ck_admin_pass CHECK (LENGTH(Pass) = 64)
+    FOREIGN KEY (Email) REFERENCES Utente(Email)
+        ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE Foto (
