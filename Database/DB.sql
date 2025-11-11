@@ -1,11 +1,13 @@
 use progettotec;
 
+DROP TABLE IF EXISTS Follow;
 DROP TABLE IF EXISTS LikePost;
 DROP TABLE IF EXISTS Commento;
 DROP TABLE IF EXISTS Post;
 DROP TABLE IF EXISTS Foto;
 DROP TABLE IF EXISTS Ban;
 DROP TABLE IF EXISTS UAdmin;
+DROP TABLE IF EXISTS UtenteStorico;
 DROP TABLE IF EXISTS Utente;
 
 CREATE TABLE Utente (
@@ -27,7 +29,7 @@ CREATE TABLE UAdmin (
 );
 
 CREATE TABLE Foto (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     Percorso VARCHAR(255) NOT NULL,
 
     -- Dati geografici:
@@ -36,29 +38,40 @@ CREATE TABLE Foto (
 
     ColoreGatto ENUM('Nero', 'Bianco', 'Rosso/Arancio', 'Grigio', 'Tigrato', 'Tartaruga', 'Multicolore'),
     EtaGatto ENUM ('Cucciolo', 'Adulto', 'Anziano'),
-    DescrizioneBreve VARCHAR(255)
+    DescrizioneBreve VARCHAR(255) NOT NULL
 );
 
--- Se banniamo un utente i suoi post restano nel db, ma EmailAutore diventa NULL
+-- Questa tabella viene popolata da un trigger prima di DELETE FROM Utente.
+CREATE TABLE UtenteStorico (
+    ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Email VARCHAR(100) NOT NULL,
+    Username VARCHAR(20) NOT NULL,
+    Pass CHAR(64) NOT NULL,
+    Livello ENUM('Cat Apprentice', 'Cat Whisperer', 'Pat Wizard', 'Pat Master'),
+    Punti SMALLINT UNSIGNED,
+    DataCancellazione DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE Post (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    EmailAutore VARCHAR(100),
-    FotoID INT NOT NULL,
-    Testo TEXT,
+    ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    EmailAutore VARCHAR(100) NOT NULL,
+    FotoID INT UNSIGNED NOT NULL,
+    Testo VARCHAR(300),
     DataOra DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsCancellato BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (EmailAutore) REFERENCES Utente(Email)
-        ON DELETE SET NULL
+        ON DELETE RESTRICT
         ON UPDATE CASCADE,
     FOREIGN KEY (FotoID) REFERENCES Foto(ID)
-        ON DELETE RESTRICT -- Una foto può essere riusata, ma non cancellata se in uso
+        ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
 
 CREATE TABLE Commento (
-    Email VARCHAR(100),
-    PostID INT,
+    Email VARCHAR(100) NOT NULL,
+    PostID INT UNSIGNED NOT NULL,
     DataOra DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Testo TEXT NOT NULL,
+    Testo VARCHAR(300) NOT NULL,
     PRIMARY KEY (Email, PostID, DataOra),
     FOREIGN KEY (Email) REFERENCES Utente(Email)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -66,23 +79,40 @@ CREATE TABLE Commento (
         ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- RELAZIONE CANCELLAZIONE POST (Utente (0,N)-<>-(0,N) Post)
+-- un utente può cancellare molti post, un post può avere molti eventi di cancellazione
+-- (es: se viene riattivato e poi cancellato di nuovo)
+CREATE TABLE LogCancellazionePost (
+    ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    PostID INT UNSIGNED NOT NULL,
+    EmailCancella VARCHAR(100) NOT NULL,
+    RuoloCancella ENUM('Utente', 'Admin') NOT NULL,
+    DataOra DATETIME DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (PostID) REFERENCES Post(ID)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (EmailCancella) REFERENCES Utente(Email)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- RELAZIONE BAN (Admin -<>- Utente)
 CREATE TABLE Ban (
-    EmailAdmin VARCHAR(100),
-    EmailUtente VARCHAR(100),
-    Motivo TEXT NOT NULL,
+    ID INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    EmailAdmin VARCHAR(100) NOT NULL,
+    EmailUtente VARCHAR(100) NOT NULL,
+    Motivo VARCHAR(200) NOT NULL,
     DataOra DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (EmailAdmin, EmailUtente),
+    DurataGiorni SMALLINT UNSIGNED,
     FOREIGN KEY (EmailAdmin) REFERENCES UAdmin(Email)
-        ON DELETE CASCADE ON UPDATE CASCADE,
+        ON DELETE RESTRICT ON UPDATE CASCADE,
     FOREIGN KEY (EmailUtente) REFERENCES Utente(Email)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- RELAZIONE LIKE (Utente -<>- Post)
 CREATE TABLE LikePost (
-    Email VARCHAR(100),
-    PostID INT,
+    Email VARCHAR(100) NOT NULL,
+    PostID INT UNSIGNED NOT NULL,
     PRIMARY KEY (Email, PostID),
     FOREIGN KEY (Email) REFERENCES Utente(Email)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -92,8 +122,8 @@ CREATE TABLE LikePost (
 
 -- RELAZIONE FOLLOW (Utente -<>- Utente)
 CREATE TABLE Follow (
-    Follower VARCHAR(100),
-    Followed VARCHAR(100),
+    Follower VARCHAR(100) NOT NULL,
+    Followed VARCHAR(100) NOT NULL,
     PRIMARY KEY (Follower, Followed),
     FOREIGN KEY (Follower) REFERENCES Utente(Email)
         ON DELETE CASCADE ON UPDATE CASCADE,
